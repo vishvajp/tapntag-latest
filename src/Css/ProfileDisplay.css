@@ -1,0 +1,63 @@
+.pro-display-main-bg {
+  position: relative;
+  overflow: hidden;
+}
+
+.pro-display-main-bg::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(255, 255, 255, 0.5)),
+    url("../assets/image/pro-display.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  filter: blur(2px);
+  -webkit-filter: blur(2px);
+  z-index: -1;
+}
+
+.card-header {
+  background-image: linear-gradient(to right, #faca18, #fa7427);
+  text-align: center;
+  font-weight: bold;
+}
+
+.n-gradient-text {
+  background: linear-gradient(yellow, #fa7427); /* Change colors as you like */
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text; /* For Firefox */
+  color: transparent;
+  font-weight: 700;
+}
+
+.tag-gradient-text {
+  background: linear-gradient(
+    rgb(147, 239, 255),
+    rgb(6, 167, 226),
+    #27c9fa
+  ); /* Change colors as you like */
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text; /* For Firefox */
+  color: transparent;
+  font-weight: 700;
+}
+
+.pro-display-h5 {
+  width: fit-content;
+  background-image: linear-gradient(
+    to right,
+    rgb(147, 239, 255),
+    rgb(6, 167, 226),
+    #27c9fa
+  );
+  color: white;
+  padding: 5px 10px;
+  border-radius: 5px;
+}

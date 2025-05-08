@@ -1,0 +1,27 @@
+.profile-creation-container {
+  /* margin-right: 0px; */
+  position: relative;
+  overflow: hidden;
+}
+
+.profile-creation-container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(122, 122, 122, 0.5)),
+    url("../assets/image/profile-create-bg.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  filter: blur(2px);
+  -webkit-filter: blur(2px);
+  z-index: -1;
+}
+
+.profile-creation-logo-div {
+  width: 200px;
+}

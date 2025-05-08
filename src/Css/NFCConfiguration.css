@@ -1,0 +1,107 @@
+.nfc-config-main-bg {
+  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+  min-height: 100vh;
+}
+
+.nfc-config-card-header {
+  background-color: #2d2d2d;
+  color: white;
+  font-weight: bold;
+  border-bottom: 2px solid #3d3d3d;
+}
+
+.nfc-config-main-bg .card {
+  background-color: #2d2d2d;
+  border: 1px solid #3d3d3d;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.nfc-config-main-bg .card-body {
+  color: #e0e0e0;
+}
+
+.nfc-config-main-bg code {
+  color: #28a745;
+  font-size: 1.1rem;
+  word-break: break-all;
+}
+
+.nfc-config-main-bg .btn-primary {
+  background-color: #28a745;
+  border-color: #28a745;
+  padding: 0.75rem 2rem;
+  font-weight: bold;
+}
+
+.nfc-config-main-bg .btn-primary:hover {
+  background-color: #218838;
+  border-color: #218838;
+}
+
+.nfc-config-main-bg .btn-outline-light {
+  border-color: #e0e0e0;
+  color: #e0e0e0;
+}
+
+.nfc-config-main-bg .btn-outline-light:hover {
+  background-color: #e0e0e0;
+  color: #2d2d2d;
+}
+
+/* Form Styles */
+.nfc-config-main-bg .form-label {
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.nfc-config-main-bg .form-select {
+  background-color: #1a1a1a;
+  color: #e0e0e0;
+  border: 1px solid #3d3d3d;
+  padding: 0.75rem;
+  transition: all 0.3s ease;
+}
+
+.nfc-config-main-bg .form-select:focus {
+  background-color: #1a1a1a;
+  color: #e0e0e0;
+  border-color: #28a745;
+  box-shadow: 0 0 0 0.25rem rgba(40, 167, 69, 0.25);
+}
+
+.nfc-config-main-bg .form-select option {
+  background-color: #1a1a1a;
+  color: #e0e0e0;
+}
+
+/* Alert Styles */
+.nfc-config-main-bg .alert {
+  border: none;
+  border-radius: 0.5rem;
+}
+
+.nfc-config-main-bg .alert-success {
+  background-color: rgba(40, 167, 69, 0.1);
+  color: #28a745;
+  border-left: 4px solid #28a745;
+}
+
+.nfc-config-main-bg .alert-danger {
+  background-color: rgba(220, 53, 69, 0.1);
+  color: #dc3545;
+  border-left: 4px solid #dc3545;
+}
+
+@media (max-width: 768px) {
+  .nfc-config-main-bg {
+    padding: 2rem 1rem !important;
+  }
+
+  .nfc-config-main-bg code {
+    font-size: 0.9rem;
+  }
+
+  .nfc-config-main-bg .form-select {
+    padding: 0.5rem;
+  }
+}

@@ -1,0 +1,168 @@
+.main-footer {
+  background-color: #333;
+  color: #fff;
+  padding: 3rem 0;
+}
+
+.main-footer h4 {
+  color: #fff;
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+  position: relative;
+  padding-bottom: 0.5rem;
+}
+
+.main-footer h4::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 50px;
+  height: 2px;
+  background-color: #00b894;
+}
+
+.about-section p {
+  color: #ccc;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+}
+
+.social-links {
+  display: flex;
+  gap: 1rem;
+}
+
+.social-links a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 35px;
+  height: 35px;
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.social-links a:hover {
+  background-color: #00b894;
+  transform: translateY(-3px);
+}
+
+/* Quick Links Styles */
+.quick-links ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.quick-links li {
+  margin-bottom: 0.8rem;
+}
+
+.quick-links a {
+  color: #ccc;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  display: inline-block;
+  position: relative;
+  padding-left: 1.2rem;
+}
+
+.quick-links a::before {
+  content: "→";
+  position: absolute;
+  left: 0;
+  color: #00b894;
+  transition: transform 0.3s ease;
+}
+
+.quick-links a:hover {
+  color: #00b894;
+  transform: translateX(5px);
+}
+
+.quick-links a:hover::before {
+  transform: translateX(3px);
+}
+
+/* Contact Info Styles */
+.contact-info {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.contact-info li {
+  color: #ccc;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.contact-info li span {
+  font-size: 1.2rem;
+  color: #00b894;
+}
+
+.footer-bottom {
+  background-color: #222;
+  color: #ccc;
+  padding: 1rem 0;
+  text-align: center;
+}
+
+.footer-bottom p {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 991px) {
+  .quick-links {
+    margin: 2rem 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .main-footer {
+    padding: 2rem 0;
+  }
+
+  .about-section {
+    margin-bottom: 2rem;
+  }
+
+  .social-links {
+    justify-content: center;
+  }
+
+  .quick-links,
+  .contact-section {
+    text-align: center;
+  }
+
+  .quick-links ul {
+    display: inline-block;
+    text-align: left;
+  }
+
+  .contact-info {
+    display: inline-block;
+    text-align: left;
+  }
+
+  .main-footer h4::after {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .main-footer h4 {
+    text-align: center;
+  }
+
+  .about-section p {
+    text-align: center;
+  }
+}

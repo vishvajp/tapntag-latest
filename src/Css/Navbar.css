@@ -1,0 +1,35 @@
+.nav-logo-link {
+  width: 140px;
+}
+
+/* Active link styles */
+.navbar-dark .nav-link.active-link {
+  font-weight: bold;
+  color: white !important;
+}
+
+/* Default link color */
+.navbar-dark .nav-link {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+/* Hover effect */
+.navbar-dark .nav-link:hover {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* Cart badge styling */
+.position-relative {
+  padding-right: 1.8rem;
+}
+
+/* Mobile menu adjustments */
+@media (max-width: 992px) {
+  .navbar-collapse {
+    padding-top: 1rem;
+  }
+
+  .nav-link {
+    padding: 0.5rem 0;
+  }
+}

@@ -1,0 +1,31 @@
+/* src/components/Stepper.css */
+.stepper {
+  display: flex;
+  align-items: center;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  margin-right: 20px;
+}
+
+.circle {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background-color: #ccc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 10px;
+}
+
+.label {
+  font-weight: bold;
+}
+
+.active .circle {
+  background-color: #f0ad4e; /* Change to your desired active color */
+  color: white;
+}
