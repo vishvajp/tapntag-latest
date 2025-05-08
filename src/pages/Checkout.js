@@ -3,43 +3,42 @@ import { Container, Row, Col, Button, Form, Card } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
+import { useAuth } from "../Context/AuthContext";
+import { useCart } from "../Context/CartContext";
 import "../Css/Checkout.css";
 import Stepper from "../components/Stepper";
 import PhoneVerification from "../components/PhoneVerification";
 import AccountCreation from "../components/AccountCreation";
+import api from "../services/api";
 
 function Checkout() {
-  const [cartItems, setCartItems] = useState([]);
-  const [total, setTotal] = useState(0);
+  const { user } = useAuth();
+  const { cart, totalPrice, loading: cartLoading } = useCart();
   const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    company: "",
+    firstName: user?.firstName || "",
+    lastName: user?.lastName || "",
     address: "",
     city: "",
     state: "",
     pinCode: "",
-    phone: "",
-    shippingMethod: "standard",
+    phone: user?.phoneNumber || "",
   });
-  const [checkoutStep, setCheckoutStep] = useState(0);
+  const [checkoutStep, setCheckoutStep] = useState(user ? 3 : 0);
   const [isGuestCheckout, setIsGuestCheckout] = useState(false);
   const [verifiedPhone, setVerifiedPhone] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const isAuthenticated = localStorage.getItem("isAuthenticated") === "true";
 
   useEffect(() => {
-    const storedCart = localStorage.getItem("cart");
-    if (storedCart) {
-      const parsedCart = JSON.parse(storedCart);
-      setCartItems(parsedCart);
-      const calculatedTotal = parsedCart.reduce(
-        (sum, item) =>
-          sum + parseFloat(item.price.replace("₹", "")) * item.quantity,
-        0
-      );
-      setTotal(calculatedTotal);
-    }
+    // Load Razorpay script
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.async = true;
+    document.body.appendChild(script);
+
+    return () => {
+      document.body.removeChild(script);
+    };
   }, []);
 
   const handleInputChange = (e) => {
@@ -65,14 +64,89 @@ function Checkout() {
     setCheckoutStep(2);
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Handle order submission
-    console.log("Order submitted:", { ...formData, cartItems, total });
-    // Clear cart and redirect to success page
-    localStorage.removeItem("cart");
-    navigate("/order-success");
+  const initializeRazorpay = async () => {
+    try {
+      setLoading(true);
+      // Create order on your backend
+      const response = await api.post("/orders/create", {
+        amount: totalPrice * 100, // Convert to paise
+        currency: "INR",
+        receipt: "receipt_" + Date.now(),
+      });
+
+      const options = {
+        key: process.env.REACT_APP_RAZORPAY_KEY_ID,
+        amount: totalPrice * 100,
+        currency: "INR",
+        name: "TapnTag",
+        description: "Payment for your order",
+        order_id: response.data.id,
+        handler: function (response) {
+          handlePaymentSuccess(response);
+        },
+        prefill: {
+          name: `${formData.firstName} ${formData.lastName}`,
+          email: user?.email || "",
+          contact: formData.phone,
+        },
+        theme: {
+          color: "#3399cc",
+        },
+      };
+
+      const razorpay = new window.Razorpay(options);
+      razorpay.open();
+    } catch (error) {
+      console.error("Payment initialization failed:", error);
+      alert("Payment initialization failed. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
+
+  const handlePaymentSuccess = async (response) => {
+    try {
+      setLoading(true);
+      // Verify payment on your backend
+      const verifyResponse = await api.post("/orders/verify", {
+        razorpay_payment_id: response.razorpay_payment_id,
+        razorpay_order_id: response.razorpay_order_id,
+        razorpay_signature: response.razorpay_signature,
+      });
+
+      if (verifyResponse.data.success) {
+        // Create order in your database
+        await api.post("/orders", {
+          items: cart,
+          totalAmount: totalPrice,
+          shippingAddress: formData,
+          paymentId: response.razorpay_payment_id,
+          orderId: response.razorpay_order_id,
+        });
+
+        // Clear cart and redirect to success page
+        navigate("/order-success");
+      }
+    } catch (error) {
+      console.error("Payment verification failed:", error);
+      alert("Payment verification failed. Please contact support.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    await initializeRazorpay();
+  };
+
+  if (cartLoading) {
+    return (
+      <Container className="mt-5 text-center">
+        <h3>Loading your cart...</h3>
+      </Container>
+    );
+  }
 
   const renderCheckoutStep = () => {
     switch (checkoutStep) {
@@ -144,7 +218,73 @@ function Checkout() {
                 </Form.Group>
               </Col>
             </Row>
-            {/* Rest of the form fields */}
+
+            <Form.Group className="mb-3">
+              <Form.Label>Address</Form.Label>
+              <Form.Control
+                type="text"
+                name="address"
+                value={formData.address}
+                onChange={handleInputChange}
+                placeholder="Street address"
+                required
+              />
+            </Form.Group>
+
+            <Row>
+              <Col md={6}>
+                <Form.Group className="mb-3">
+                  <Form.Label>City</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="city"
+                    value={formData.city}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </Form.Group>
+              </Col>
+              <Col md={6}>
+                <Form.Group className="mb-3">
+                  <Form.Label>State</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="state"
+                    value={formData.state}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </Form.Group>
+              </Col>
+            </Row>
+
+            <Row>
+              <Col md={6}>
+                <Form.Group className="mb-3">
+                  <Form.Label>PIN Code</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="pinCode"
+                    value={formData.pinCode}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </Form.Group>
+              </Col>
+              <Col md={6}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Phone Number</Form.Label>
+                  <Form.Control
+                    type="tel"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </Form.Group>
+              </Col>
+            </Row>
+
             <Button variant="primary" type="submit" className="w-100 mt-4">
               Place Order
             </Button>
@@ -175,23 +315,36 @@ function Checkout() {
           <Card>
             <Card.Body>
               <h5>Order Summary</h5>
-              {cartItems.map((item) => (
+              {cart.map((item) => (
                 <div
-                  key={item.id}
-                  className="d-flex justify-content-between mb-2"
+                  key={item._id}
+                  className="d-flex align-items-center mb-3"
                 >
-                  <span>
-                    {item.name} x {item.quantity}
-                  </span>
-                  <span>
-                    ₹{parseFloat(item.price.replace("₹", "")) * item.quantity}
-                  </span>
+                  <img
+                    src={`${process.env.REACT_APP_API_BASE_URL || 'http://localhost:3000'}/vishva/tapntag${item.product.images && item.product.images.length > 0 ? item.product.images[0] : '/placeholder-image.jpg'}`}
+                    alt={item.product.name}
+                    className="checkout-item-image me-2"
+                    style={{ width: '50px', height: '50px', objectFit: 'cover' }}
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = '/placeholder-image.jpg';
+                    }}
+                  />
+                  <div className="flex-grow-1">
+                    <div className="d-flex justify-content-between">
+                      <span className="text-truncate" style={{ maxWidth: '150px' }}>
+                        {item.product.name}
+                      </span>
+                      <span>₹{(item.price * item.quantity).toFixed(2)}</span>
+                    </div>
+                    <small className="text-muted">Quantity: {item.quantity}</small>
+                  </div>
                 </div>
               ))}
               <hr />
               <div className="d-flex justify-content-between">
                 <strong>Total</strong>
-                <strong>₹{total}</strong>
+                <strong>₹{totalPrice.toFixed(2)}</strong>
               </div>
             </Card.Body>
           </Card>

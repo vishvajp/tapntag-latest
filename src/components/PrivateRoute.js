@@ -1,12 +1,15 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
+import { useAuth } from '../Context/AuthContext';
 
 const PrivateRoute = ({ children }) => {
-  const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
-  const token = localStorage.getItem('token');
+  const { user, loading } = useAuth();
 
-  if (!isAuthenticated || !token) {
-    // Redirect to login if not authenticated
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!user) {
     return <Navigate to="/login" replace />;
   }
 

@@ -7,6 +7,7 @@ const path = require("path");
 const { router: authRoutes } = require("./routes/auth");
 const productRoutes = require("./routes/product");
 const cartRoutes = require("./routes/cart");
+const ordersRouter = require('./routes/orders');
 
 dotenv.config();
 
@@ -16,7 +17,7 @@ const app = express();
 app.use(
   cors({
     origin: "http://localhost:3000", // Your frontend URL
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     credentials: true,
   })
 );
@@ -29,7 +30,9 @@ app.use("/uploads", express.static(path.join(__dirname, "public/uploads")));
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);
-app.use("/api/cart", cartRoutes)
+app.use("/api/cart", cartRoutes);
+app.use('/api/orders', ordersRouter);
+
 // MongoDB Connection
 mongoose
   .connect(process.env.MONGODB_URI || "mongodb://localhost:27017/tapntag", {

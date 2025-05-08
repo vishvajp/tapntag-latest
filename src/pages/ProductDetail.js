@@ -39,9 +39,17 @@ function ProductDetail() {
       if (!product || !product._id) {
         throw new Error('Invalid product data');
       }
+
+      if (!user) {
+        // For guest users, add directly to guest cart with product data
+        await addToCart(product._id, quantity, product);
+        alert(`${product.name} added to cart!`);
+        return;
+      }
+
+      // For logged-in users
       console.log('Adding to cart:', { productId: product._id, quantity, user, token });
       await addToCart(product._id, quantity);
-      // Show success notification
       alert(`${product.name} added to cart!`);
     } catch (error) {
       console.error('Error adding to cart:', error);
@@ -77,6 +85,7 @@ function ProductDetail() {
 
   // Generate box contents based on product name
   const boxContents = [`1 x ${product.name}`, "1 x Setup Manual"];
+
 
   return (
     <Container className="product-detail-container">

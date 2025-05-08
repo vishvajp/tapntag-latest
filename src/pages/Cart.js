@@ -20,6 +20,7 @@ function Cart() {
   
   const { user } = useAuth();
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [updatingItemId, setUpdatingItemId] = useState(null);
   const navigate = useNavigate();
 
   const handleQuantityChange = async (productId, change) => {
@@ -29,10 +30,13 @@ function Cart() {
     const newQuantity = item.quantity + change;
     if (newQuantity >= 1 && newQuantity <= 10) {
       try {
+        setUpdatingItemId(productId);
         await updateCartItem(productId, newQuantity);
       } catch (error) {
         console.error("Failed to update quantity:", error);
-        // Show error to user if needed
+        // You might want to show a toast notification here
+      } finally {
+        setUpdatingItemId(null);
       }
     }
   };
@@ -96,62 +100,71 @@ console.log(cart)
                   </tr>
                 </thead>
                 <tbody>
-                  {cart.map((item) => (
-                    <tr key={item._id}>
-                      <td>
-                        <div className="d-flex align-items-center">
-                          <img
-                            src={`${process.env.REACT_APP_API_BASE_URL || 'http://localhost:3000'}/vishva/tapntag${item.product.images && item.product.images.length > 0 ? item.product.images[0] : '/placeholder-image.jpg'}`}
-                            alt={item.name}
-                            className="cart-item-image me-3"
-                            onError={(e) => {
-                              e.target.onerror = null; 
-                              e.target.src = '/placeholder-image.jpg';
-                            }}
-                          />
-                          <div>
-                            <h5 className="mb-0">{item.name}</h5>
+                  {cart.map((item) => {
+                    // Handle both logged-in and non-logged-in cart structures
+                    const product = item.product || item;
+                    const itemId = item._id;
+                    const itemName = product.name;
+                    const itemPrice = item.price || product.price;
+                    const itemImages = product.images || [];
+
+                    return (
+                      <tr key={itemId}>
+                        <td>
+                          <div className="d-flex align-items-center">
+                            <img
+                              src={`${process.env.REACT_APP_API_BASE_URL || 'http://localhost:3000'}/vishva/tapntag${itemImages.length > 0 ? itemImages[0] : '/placeholder-image.jpg'}`}
+                              alt={itemName}
+                              className="cart-item-image me-3"
+                              onError={(e) => {
+                                e.target.onerror = null; 
+                                e.target.src = '/placeholder-image.jpg';
+                              }}
+                            />
+                            <div>
+                              <h5 className="mb-0">{itemName}</h5>
+                            </div>
                           </div>
-                        </div>
-                      </td>
-                      <td>₹{item.price}</td>
-                      <td>
-                        <div className="d-flex align-items-center">
+                        </td>
+                        <td>₹{itemPrice}</td>
+                        <td>
+                          <div className="d-flex align-items-center">
+                            <Button
+                              variant="outline-secondary"
+                              size="sm"
+                              onClick={() => handleQuantityChange(itemId, -1)}
+                              className="quantity-btn"
+                              disabled={item.quantity <= 1 || updatingItemId === itemId}
+                            >
+                              -
+                            </Button>
+                            <span className="mx-2">{item.quantity}</span>
+                            <Button
+                              variant="outline-secondary"
+                              size="sm"
+                              onClick={() => handleQuantityChange(itemId, 1)}
+                              className="quantity-btn"
+                              disabled={item.quantity >= 10 || updatingItemId === itemId}
+                            >
+                              +
+                            </Button>
+                          </div>
+                        </td>
+                        <td>
+                          ₹{(itemPrice * item.quantity).toFixed(2)}
+                        </td>
+                        <td>
                           <Button
-                            variant="outline-secondary"
+                            variant="outline-danger"
                             size="sm"
-                            onClick={() => handleQuantityChange(item._id, -1)}
-                            className="quantity-btn"
-                            disabled={item.quantity <= 1}
+                            onClick={() => handleRemoveItem(itemId)}
                           >
-                            -
+                            <FontAwesomeIcon icon={faTrash} />
                           </Button>
-                          <span className="mx-2">{item.quantity}</span>
-                          <Button
-                            variant="outline-secondary"
-                            size="sm"
-                            onClick={() => handleQuantityChange(item._id, 1)}
-                            className="quantity-btn"
-                            disabled={item.quantity >= 10}
-                          >
-                            +
-                          </Button>
-                        </div>
-                      </td>
-                      <td>
-                        ₹{(item.price * item.quantity).toFixed(2)}
-                      </td>
-                      <td>
-                        <Button
-                          variant="outline-danger"
-                          size="sm"
-                          onClick={() => handleRemoveItem(item._id)}
-                        >
-                          <FontAwesomeIcon icon={faTrash} />
-                        </Button>
-                      </td>
-                    </tr>
-                  ))}
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </Table>
 

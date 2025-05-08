@@ -28,14 +28,18 @@ export const CartProvider = ({ children }) => {
     }
   };
 
-  const addToCart = async (productId, quantity) => {
+  const addToCart = async (productId, quantity, product = null) => {
     try {
       if (user && token) {
         await cartApi.addToCart(productId, quantity, token);
       } else {
-        // For guest users, we need to fetch the product first
-        const product = await cartApi.getProduct(productId);
-        cartApi.addToGuestCart(product, quantity);
+        // For guest users, use the product data if provided, otherwise fetch it
+        if (product) {
+          cartApi.addToGuestCart(product, quantity);
+        } else {
+          const fetchedProduct = await cartApi.getProduct(productId);
+          cartApi.addToGuestCart(fetchedProduct, quantity);
+        }
       }
       await fetchCart();
     } catch (error) {

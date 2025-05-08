@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import { NavDropdown, Modal, Button, Form } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
+import UserOrders from './UserOrders';
 import '../Css/ProfileDropdown.css';
 
 function ProfileDropdown() {
   const navigate = useNavigate();
   const [showProfile, setShowProfile] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showOrdersModal, setShowOrdersModal] = useState(false);
   const [userData, setUserData] = useState(() => {
     const stored = localStorage.getItem('userData');
     return stored ? JSON.parse(stored) : null;
@@ -75,6 +77,9 @@ function ProfileDropdown() {
         <NavDropdown.Item onClick={handleEdit}>
           <i className="fas fa-edit me-2"></i>Edit Profile
         </NavDropdown.Item>
+        <NavDropdown.Item onClick={() => setShowOrdersModal(true)}>
+          <i className="fas fa-shopping-bag me-2"></i>My Orders
+        </NavDropdown.Item>
         <NavDropdown.Divider />
         <NavDropdown.Item onClick={handleLogout}>
           <i className="fas fa-sign-out-alt me-2"></i>Sign Out
@@ -86,7 +91,7 @@ function ProfileDropdown() {
         <Modal.Header closeButton>
           <Modal.Title>Profile Information</Modal.Title>
         </Modal.Header>
-        <Modal.Body >
+        <Modal.Body>
           <div className="mb-3">
             <strong className='pro-display-text'>Name:</strong> <span className="pro-value-text">{userData?.firstName} {userData?.lastName}</span>
           </div>
@@ -103,6 +108,26 @@ function ProfileDropdown() {
           </Button>
           <Button variant="primary" onClick={handleEdit}>
             Edit Profile
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Orders Modal */}
+      <Modal 
+        show={showOrdersModal} 
+        onHide={() => setShowOrdersModal(false)}
+        size="lg"
+        className="orders-modal"
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>My Orders</Modal.Title>
+        </Modal.Header>
+        <Modal.Body style={{backgroundColor:"white"}}>
+          <UserOrders />
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowOrdersModal(false)}>
+            Close
           </Button>
         </Modal.Footer>
       </Modal>

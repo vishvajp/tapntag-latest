@@ -35,7 +35,7 @@ function PhoneVerification({
       setIsLoading(true);
       setError("");
       const response = await sendOTP(phoneNumber);
-      alert(response.otpNo);
+      alert("OTP has been sent to your phone number");
       setIsNewUser(response.isNewUser);
       setSuccess("OTP has been sent to your phone number");
     } catch (error) {
